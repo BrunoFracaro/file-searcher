@@ -20,29 +20,39 @@ function activate(context) {
 	const disposable = vscode.commands.registerCommand('file-searcher.helloWorld', async function () {
 		// The code you place here will be executed every time your command is executed
 
-		const allImagesFilesObj = await vscode.workspace.findFiles('**/*.{png,jpg,jpeg,gif,svg}', '**/node_modules/**');
-		const allImagesFilesNames = []
-		for (const item of allImagesFilesObj) {
-			allImagesFilesNames.push(item.path);
-		}
+		// get all image files and stores the path in "allImages" array
+		const allImages = await getAllImageFiles()
 
-		const allJsFilesObj = await vscode.workspace.findFiles('**/*.js', '**/node_modules/**');
-		const allJsFilesNames = []
-		for (const item of allJsFilesObj) {
-			allJsFilesNames.push(item.path);
+		// get all files and stores the path in "allFiles" array
+		const allFiles = await getAllFiles()
 
-			console.log(item.path);
-		}
-
-		const text = await readFileContent(allJsFilesNames[0]);
+		const text = await readFileContent(allFiles[0]);
 
 		console.log(text);
 
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from File Searcher Unused Image Highlighter8!');
+		vscode.window.showInformationMessage('Hello World from File Searcher Unused Image Highlighter9!');
 	});
 
 	context.subscriptions.push(disposable);
+}
+
+async function getAllImageFiles() {
+	const allFilesObj = await vscode.workspace.findFiles('**/*.{png,jpg,jpeg,gif,svg}', '**/node_modules/**');
+	const allFilesPath = []
+	for (const item of allFilesObj) {
+		allFilesPath.push(item.path);
+	}
+	return allFilesPath;
+}
+
+async function getAllFiles() {
+	const allFilesObj = await vscode.workspace.findFiles('**/*', '**/node_modules/**');
+	const allFilesPath = []
+	for (const item of allFilesObj) {
+		allFilesPath.push(item.path);
+	}
+	return allFilesPath;
 }
 
 async function readFileContent(filePath) {
