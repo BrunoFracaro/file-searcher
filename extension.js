@@ -26,12 +26,18 @@ function activate(context) {
 		// get all files and stores the path in "allFiles" array
 		const allFiles = await getAllFiles()
 
-		const text = await readFileContent(allFiles[0]);
+		// concat all text in all files for further matching with images names
+		let filesCompleteText = ''
+		for (const item of allFiles) {
+			const text = await readFileContent(item);
+			filesCompleteText = filesCompleteText + text
+		}
 
-		console.log(text);
+		// get unused images by matching the iamge name to any mention on the other files
+		const notUsed = allImages.filter(path => !filesCompleteText.includes(path.split('/')[path.split('/').length - 1]))
 
 		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from File Searcher Unused Image Highlighter9!');
+		vscode.window.showInformationMessage('Hello World from File Searcher Unused Image Highlighter!');
 	});
 
 	context.subscriptions.push(disposable);
@@ -56,12 +62,16 @@ async function getAllFiles() {
 }
 
 async function readFileContent(filePath) {
-  const document = await vscode.workspace.openTextDocument(vscode.Uri.file(filePath));
-  return document.getText();
+	try {
+		const document = await vscode.workspace.openTextDocument(vscode.Uri.file(filePath));
+		return document.getText();
+	} catch (error) {
+		return ''
+	}
 }
 
 // This method is called when your extension is deactivated
-function deactivate() {}
+function deactivate() { }
 
 module.exports = {
 	activate,
