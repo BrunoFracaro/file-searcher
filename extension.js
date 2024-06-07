@@ -8,43 +8,41 @@ const vscode = require('vscode');
 /**
  * @param {vscode.ExtensionContext} context
  */
-function activate(context) {
+async function activate() {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "file-searcher" is now active!');
+	// this line will be run on initialization
+	await markFilesAsUnused();
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with  registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('file-searcher.helloWorld', async function () {
-		// The code you place here will be executed every time your command is executed
-
-		// get all image files and stores the path in "allImages" array
-		const allImages = await getAllImageFiles()
-
-		// get all files and stores the path in "allFiles" array
-		const allFiles = await getAllFiles()
-
-		// concat all text in all files for further matching with images names
-		let filesCompleteText = ''
-		for (const item of allFiles) {
-			const text = await readFileContent(item);
-			filesCompleteText = filesCompleteText + text
-		}
-
-		// get unused images by matching the image name to any mention on the other files, including comments
-		const notUsed = allImages.filter(path => !filesCompleteText.includes(path.split('/')[path.split('/').length - 1]))
-
-		// calling countdecorationProvider class to badge the unused images
-		const countDecorationProvider = new CountDecorationProvider(notUsed);
-		vscode.window.registerFileDecorationProvider(countDecorationProvider);
-
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from File Searcher Unused Image Highlighter!');
+	// This listener will execute when a file is saved
+	vscode.workspace.onDidSaveTextDocument(async() => {
+		await markFilesAsUnused();
 	});
 
-	context.subscriptions.push(disposable);
+}
+
+async function markFilesAsUnused() {
+	// get all image files and stores the path in "allImages" array
+	const allImages = await getAllImageFiles()
+
+	// get all files and stores the path in "allFiles" array
+	const allFiles = await getAllFiles()
+
+	// concat all text in all files for further matching with images names
+	let filesCompleteText = ''
+	for (const item of allFiles) {
+		const text = await readFileContent(item);
+		filesCompleteText = filesCompleteText + text
+	}
+
+	// get unused images by matching the image name to any mention on the other files, including comments
+	const notUsed = allImages.filter(path => !filesCompleteText.includes(path.split('/')[path.split('/').length - 1]))
+
+	// calling countdecorationProvider class to badge the unused images
+	const countDecorationProvider = new CountDecorationProvider(notUsed);
+	vscode.window.registerFileDecorationProvider(countDecorationProvider);
+
+	// Display a message box to the user
+	vscode.window.showInformationMessage('Hello World from File Searcher Unused Image Highlighter!');
 }
 
 async function getAllImageFiles() {
@@ -90,8 +88,7 @@ class CountDecorationProvider {
 			return {
 				badge: "Un",
 				tooltip: "Unusd media file in workspace",
-				color: "blue",
-				propagate: true
+				color: new vscode.ThemeColor("charts.orange"),
 			};
 		}
 	}
