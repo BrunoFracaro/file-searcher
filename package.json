@@ -2,7 +2,7 @@
   "name": "unused-images-highlighter",
   "displayName": "Unused Images Highlighter",
   "description": "Check if a media file is being imported somewhere in the project or if it is unused",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "icon": "logo.png",
   "publisher": "BrunoAlcantara",
   "repository": {
@@ -21,7 +21,28 @@
     "commands": [{
       "command": "unused-images-highlighter.helloWorld",
       "title": "Hello World"
-    }]
+    }],
+    "configuration": {
+      "title": "Unused Images Highlighter",
+      "properties": {
+        "unused-images-highlighter.fontColor": {
+          "type": "string",
+          "description": "What color should the unsued images name show on the explorer tab?",
+          "default": "orange",
+          "enum": ["red", "blue", "yellow", "orange", "green", "purple"]
+        },
+        "unused-images-highlighter.badge": {
+          "type": "boolean",
+          "description": "Should the badge 'Un' show on the unused images?",
+          "default": true
+        },
+        "unused-images-highlighter.propagate": {
+          "type": "boolean",
+          "description": "Should the parent folders change color?",
+          "default": false
+        }
+      }
+    }
   },
   "scripts": {
     "lint": "eslint .",

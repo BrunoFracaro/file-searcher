@@ -15,6 +15,10 @@ async function activate() {
 		await markFilesAsUnused();
 	});
 
+	// This listener will execute when a file is renamed
+	vscode.workspace.onDidRenameFiles(async () => {
+		await markFilesAsUnused();
+	});
 }
 
 async function markFilesAsUnused() {
@@ -82,15 +86,34 @@ class UnusedDecorationProvider {
 	}
 
 	// marking the unused images with an "Un" badge
-	provideFileDecoration(uri) {
+	async provideFileDecoration(uri) {
 		const show = this.unused.includes(uri.path)
 		if (show) {
 			const newUnused = this.unused.filter(item => item !== uri.path)
 			this.unused = newUnused
+
+			const badge = await vscode.workspace.getConfiguration('unused-images-highlighter').get('badge');
+
+			const propagate = await vscode.workspace.getConfiguration('unused-images-highlighter').get('propagate');
+
+			const fontColor = await vscode.workspace.getConfiguration('unused-images-highlighter').get('fontColor');
+
+			const colors = {
+				red: "charts.red",
+				blue: "charts.blue",
+				yellow: "charts.yellow",
+				orange: "charts.orange",
+				green: "charts.green",
+				purple: "charts.purple",
+			}
+
+			const color = colors[fontColor]
+
 			return {
-				badge: "Un",
+				badge: badge ? "Un" : '',
 				tooltip: "Unusd media file in workspace",
-				color: new vscode.ThemeColor("charts.orange"),
+				color: new vscode.ThemeColor(color),
+				propagate: propagate
 			};
 		}
 	}
