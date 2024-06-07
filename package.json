@@ -2,7 +2,8 @@
   "name": "unused-images-highlighter",
   "displayName": "Unused Images Highlighter",
   "description": "Check if a media file is being imported somewhere in the project or if it is unused",
-  "version": "0.0.1",
+  "version": "0.0.3",
+  "icon": "logo.png",
   "publisher": "BrunoAlcantara",
   "repository": {
     "type":"git",
