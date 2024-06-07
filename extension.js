@@ -2,9 +2,6 @@
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -14,7 +11,7 @@ async function activate() {
 	await markFilesAsUnused();
 
 	// This listener will execute when a file is saved
-	vscode.workspace.onDidSaveTextDocument(async() => {
+	vscode.workspace.onDidSaveTextDocument(async () => {
 		await markFilesAsUnused();
 	});
 
@@ -38,11 +35,8 @@ async function markFilesAsUnused() {
 	const notUsed = allImages.filter(path => !filesCompleteText.includes(path.split('/')[path.split('/').length - 1]))
 
 	// calling countdecorationProvider class to badge the unused images
-	const countDecorationProvider = new CountDecorationProvider(notUsed);
-	vscode.window.registerFileDecorationProvider(countDecorationProvider);
-
-	// Display a message box to the user
-	vscode.window.showInformationMessage('Hello World from File Searcher Unused Image Highlighter!');
+	const unusedDecorationProvider = new UnusedDecorationProvider(notUsed);
+	vscode.window.registerFileDecorationProvider(unusedDecorationProvider);
 }
 
 async function getAllImageFiles() {
@@ -72,11 +66,19 @@ async function readFileContent(filePath) {
 	}
 }
 
-class CountDecorationProvider {
+let instance;
+
+class UnusedDecorationProvider {
 	constructor(unused) {
 		this.disposables = [];
 		this.disposables.push(vscode.window.registerFileDecorationProvider(this));
 		this.unused = unused
+		if (instance) {
+			instance.dispose();
+			instance = null;
+		}
+
+		instance = this;
 	}
 
 	// marking the unused images with an "Un" badge
