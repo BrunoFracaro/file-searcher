@@ -33,8 +33,12 @@ function activate(context) {
 			filesCompleteText = filesCompleteText + text
 		}
 
-		// get unused images by matching the iamge name to any mention on the other files
+		// get unused images by matching the image name to any mention on the other files, including comments
 		const notUsed = allImages.filter(path => !filesCompleteText.includes(path.split('/')[path.split('/').length - 1]))
+
+		// calling countdecorationProvider class to badge the unused images
+		const countDecorationProvider = new CountDecorationProvider(notUsed);
+		vscode.window.registerFileDecorationProvider(countDecorationProvider);
 
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from File Searcher Unused Image Highlighter!');
@@ -67,6 +71,33 @@ async function readFileContent(filePath) {
 		return document.getText();
 	} catch (error) {
 		return ''
+	}
+}
+
+class CountDecorationProvider {
+	constructor(unused) {
+		this.disposables = [];
+		this.disposables.push(vscode.window.registerFileDecorationProvider(this));
+		this.unused = unused
+	}
+
+	// marking the unused images with an "Un" badge
+	provideFileDecoration(uri) {
+		const show = this.unused.includes(uri.path)
+		if (show) {
+			const newUnused = this.unused.filter(item => item !== uri.path)
+			this.unused = newUnused
+			return {
+				badge: "Un",
+				tooltip: "Unusd media file in workspace",
+				color: "blue",
+				propagate: true
+			};
+		}
+	}
+
+	dispose() {
+		this.disposables.forEach((d) => d.dispose());
 	}
 }
 
