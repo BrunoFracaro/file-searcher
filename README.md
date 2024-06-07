@@ -28,7 +28,10 @@ This extension helps developers identify unused media files within their project
 
 ## Settings:
 
-You can change the textColor used to highlight unused media files in the VS Code settings.
-Search for "Unused Image Highlighter" in the settings editor and adjust the "unusedImageHighlightColor" setting.
+* You can change the Font Color used to highlight unused media files in the VS Code settings.
+* Choose to show the "Un" badge.
+* Choose to propagate the colors to the parent folders.
+* Search for "Unused Image Highlighter" in the settings editor and adjust to your preferences.
+* You can set manually on the settings file with the tags `unused-images-highlighter.fontColor`, `unused-images-highlighter.badge` and `unused-images-highlighter.propagate`.
 
 **Enjoy!**

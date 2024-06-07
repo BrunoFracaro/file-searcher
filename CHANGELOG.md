@@ -1,3 +1,3 @@
 # Change Log
 
-- Initial release
+- Edit color and badge on extension settings
