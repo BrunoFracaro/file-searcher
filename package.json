@@ -3,6 +3,11 @@
   "displayName": "Unused Images Highlighter",
   "description": "Check if a media file is being imported somewhere in the project or if it is unused",
   "version": "0.0.1",
+  "publisher": "BrunoAlcantara",
+  "repository": {
+    "type":"git",
+    "url": "https://github.com/BrunoFracaro/Unused-Image-Highlighter"
+  },
   "engines": {
     "vscode": "^1.90.0"
   },
