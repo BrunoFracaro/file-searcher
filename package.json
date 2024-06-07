@@ -1,7 +1,7 @@
 {
-  "name": "file-searcher",
-  "displayName": "File Searcher",
-  "description": "Check if image file is being imported somewhere in the project or it is unused",
+  "name": "unused-images-highlighter",
+  "displayName": "Unused Images Highlighter",
+  "description": "Check if a media file is being imported somewhere in the project or if it is unused",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.90.0"
@@ -13,7 +13,7 @@
   "main": "./extension.js",
   "contributes": {
     "commands": [{
-      "command": "file-searcher.helloWorld",
+      "command": "unused-images-highlighter.helloWorld",
       "title": "Hello World"
     }]
   },
