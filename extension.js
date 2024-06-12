@@ -28,15 +28,22 @@ async function markFilesAsUnused() {
 	// get all files and stores the path in "allFiles" array
 	const allFiles = await getAllFiles()
 
-	// concat all text in all files for further matching with images names
-	let filesCompleteText = ''
-	for (const item of allFiles) {
-		const text = await readFileContent(item);
-		filesCompleteText = filesCompleteText + text
-	}
+	// initialize array of not used images
+	const notUsed = allImages
 
-	// get unused images by matching the image name to any mention on the other files, including comments
-	const notUsed = allImages.filter(path => !filesCompleteText.includes(path.split('/')[path.split('/').length - 1]))
+	// run evey file to check if any image appers on the file
+	for (const item of allFiles) {
+
+		const text = await readFileContent(item);
+
+		for (const img of notUsed) {
+			// if image appers on the file, remove it from notUsed array
+			if (text.includes(img.split('/')[img.split('/').length - 1])) {
+				notUsed.splice(notUsed.indexOf(img), 1)
+			}
+		}
+
+	}
 
 	// calling countdecorationProvider class to badge the unused images
 	const unusedDecorationProvider = new UnusedDecorationProvider(notUsed);
