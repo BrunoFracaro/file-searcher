@@ -2,11 +2,11 @@
   "name": "unused-images-highlighter",
   "displayName": "Unused Images Highlighter",
   "description": "Check if a media file is being imported somewhere in the project or if it is unused",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "icon": "logo.png",
   "publisher": "BrunoAlcantara",
   "repository": {
-    "type":"git",
+    "type": "git",
     "url": "https://github.com/BrunoFracaro/Unused-Image-Highlighter"
   },
   "engines": {
@@ -15,13 +15,17 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [ "onStartupFinished" ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./extension.js",
   "contributes": {
-    "commands": [{
-      "command": "unused-images-highlighter.helloWorld",
-      "title": "Hello World"
-    }],
+    "commands": [
+      {
+        "command": "unused-images-highlighter.helloWorld",
+        "title": "Hello World"
+      }
+    ],
     "configuration": {
       "title": "Unused Images Highlighter",
       "properties": {
@@ -29,7 +33,14 @@
           "type": "string",
           "description": "What color should the unsued images name show on the explorer tab?",
           "default": "orange",
-          "enum": ["red", "blue", "yellow", "orange", "green", "purple"]
+          "enum": [
+            "red",
+            "blue",
+            "yellow",
+            "orange",
+            "green",
+            "purple"
+          ]
         },
         "unused-images-highlighter.badge": {
           "type": "boolean",
@@ -50,12 +61,15 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.90.0",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
-    "eslint": "^8.57.0",
-    "typescript": "^5.4.5",
+    "@types/vscode": "^1.90.0",
     "@vscode/test-cli": "^0.0.9",
-    "@vscode/test-electron": "^2.4.0"
+    "@vscode/test-electron": "^2.4.0",
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }

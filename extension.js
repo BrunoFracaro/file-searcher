@@ -1,6 +1,10 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
+
+
 const vscode = require('vscode');
+const _ = require('lodash'); // Assuming you've installed lodash
+
+let fileContentMap = {};
+let unusedImages = [];
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -8,59 +12,68 @@ const vscode = require('vscode');
 async function activate() {
 
 	// this line will be run on initialization
-	await markFilesAsUnused();
+	await updateUnusedImages();
 
-	// This listener will execute when a file is saved
-	vscode.workspace.onDidSaveTextDocument(async () => {
-		await markFilesAsUnused();
-	});
+	// Debounced listener for file saves and renames (adjust delay as needed)
+	const debouncedUpdate = _.debounce(updateUnusedImages, 500);
 
-	// This listener will execute when a file is renamed
-	vscode.workspace.onDidRenameFiles(async () => {
-		await markFilesAsUnused();
-	});
-}
+	vscode.workspace.onDidSaveTextDocument(debouncedUpdate);
+	vscode.workspace.onDidRenameFiles(debouncedUpdate);
 
-async function markFilesAsUnused() {
-	// get all image files and stores the path in "allImages" array
-	const allImages = await getAllImageFiles()
-
-	// get all files and stores the path in "allFiles" array
-	const allFiles = await getAllFiles()
-
-	// initialize array of not used images
-	const notUsed = allImages
-
-	// run evey file to check if any image appers on the file
-	for (const item of allFiles) {
-
-		const text = await readFileContent(item);
-
-		for (const img of notUsed) {
-			// if image appers on the file, remove it from notUsed array
-			if (text.includes(img.split('/')[img.split('/').length - 1])) {
-				notUsed.splice(notUsed.indexOf(img), 1)
-			}
-		}
-
+	if (firstRender) {
+		firstRender = false;
+		debouncedUpdate();
 	}
 
-	// calling countdecorationProvider class to badge the unused images
-	const unusedDecorationProvider = new UnusedDecorationProvider(notUsed);
+}
+
+let firstRender = true;
+
+async function updateUnusedImages() {
+	fileContentMap = await buildFileContentMap();
+	unusedImages = await filterUnusedImages(fileContentMap);
+
+	// Calling countdecorationProvider class to badge unused images
+	const unusedDecorationProvider = new UnusedDecorationProvider(unusedImages);
 	vscode.window.registerFileDecorationProvider(unusedDecorationProvider);
+}
+
+async function buildFileContentMap() {
+	const allFilesObj = await vscode.workspace.findFiles('**/*', '**/node_modules/**');
+	const promises = allFilesObj.map(async (item) => {
+		const content = await readFileContent(item.path);
+		return { path: item.path, content };
+	});
+
+	const contentArray = await Promise.all(promises);
+	const map = {};
+	for (const item of contentArray) {
+		map[item.path] = item.content;
+	}
+	return map;
+}
+
+async function filterUnusedImages(contentMap) {
+	const allImages = await getAllImageFiles();
+	const unused = [];
+	for (const image of allImages) {
+		const imageName = image.split('/')[image.split('/').length - 1];
+		let found = false;
+		for (const path in contentMap) {
+			if (contentMap[path].includes(imageName)) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			unused.push(image);
+		}
+	}
+	return unused;
 }
 
 async function getAllImageFiles() {
 	const allFilesObj = await vscode.workspace.findFiles('**/*.{png,jpg,jpeg,gif,svg}', '**/node_modules/**');
-	const allFilesPath = []
-	for (const item of allFilesObj) {
-		allFilesPath.push(item.path);
-	}
-	return allFilesPath;
-}
-
-async function getAllFiles() {
-	const allFilesObj = await vscode.workspace.findFiles('**/*', '**/node_modules/**');
 	const allFilesPath = []
 	for (const item of allFilesObj) {
 		allFilesPath.push(item.path);
