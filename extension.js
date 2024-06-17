@@ -14,7 +14,7 @@ async function activate() {
 	// this line will be run on initialization
 	await updateUnusedImages();
 
-	// Debounced listener for file saves and renames (adjust delay as needed)
+	// Debounced listener for file saves and renames
 	const debouncedUpdate = _.debounce(updateUnusedImages, 500);
 
 	vscode.workspace.onDidSaveTextDocument(debouncedUpdate);
@@ -29,13 +29,21 @@ async function activate() {
 
 let firstRender = true;
 
-async function updateUnusedImages() {
-	fileContentMap = await buildFileContentMap();
-	unusedImages = await filterUnusedImages(fileContentMap);
+async function updateUnusedImages(document) {
+  if (document) {
+    const filePath = document.uri.path;
+    // Update contentMap only for the saved document
+    fileContentMap[filePath] = await document.getText();
+  } else {
+    // Full rebuild if no document provided (e.g., on activation)
+    fileContentMap = await buildFileContentMap();
+  }
 
-	// Calling countdecorationProvider class to badge unused images
-	const unusedDecorationProvider = new UnusedDecorationProvider(unusedImages);
-	vscode.window.registerFileDecorationProvider(unusedDecorationProvider);
+  unusedImages = await filterUnusedImages(fileContentMap);
+
+  // Calling countdecorationProvider class to badge unused images
+  const unusedDecorationProvider = new UnusedDecorationProvider(unusedImages);
+  vscode.window.registerFileDecorationProvider(unusedDecorationProvider);
 }
 
 async function buildFileContentMap() {
