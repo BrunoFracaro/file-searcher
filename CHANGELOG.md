@@ -1,5 +1,4 @@
 # Change Log
 
-- Performance improvements for large workspaces
-- Lodash debouncer listener to manage multiple save files simultaneously. Trhottling mechanism
-- File batching reads
+- Performance update
+- Only checks for chanes in the saved file, rather than look for all files again
