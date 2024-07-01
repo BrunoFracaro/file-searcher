@@ -5,6 +5,8 @@ const _ = require('lodash'); // Assuming you've installed lodash
 
 let fileContentMap = {};
 let unusedImages = [];
+let unusedDecorationProvider;
+let disposable;
 
 /**
  * @param {vscode.ExtensionContext} context
@@ -20,30 +22,28 @@ async function activate() {
 	vscode.workspace.onDidSaveTextDocument(debouncedUpdate);
 	vscode.workspace.onDidRenameFiles(debouncedUpdate);
 
-	if (firstRender) {
-		firstRender = false;
-		debouncedUpdate();
-	}
-
 }
 
-let firstRender = true;
-
 async function updateUnusedImages(document) {
-  if (document) {
-    const filePath = document.uri.path;
-    // Update contentMap only for the saved document
-    fileContentMap[filePath] = await document.getText();
-  } else {
-    // Full rebuild if no document provided (e.g., on activation)
-    fileContentMap = await buildFileContentMap();
-  }
 
-  unusedImages = await filterUnusedImages(fileContentMap);
+	if (disposable) {
+		disposable.dispose();
+	}
 
-  // Calling countdecorationProvider class to badge unused images
-  const unusedDecorationProvider = new UnusedDecorationProvider(unusedImages);
-  vscode.window.registerFileDecorationProvider(unusedDecorationProvider);
+	if (document) {
+		const filePath = document.uri.path;
+		// Update contentMap only for the saved document
+		fileContentMap[filePath] = await document.getText();
+	} else {
+		// Full rebuild if no document provided (e.g., on activation)
+		fileContentMap = await buildFileContentMap();
+	}
+
+	unusedImages = await filterUnusedImages(fileContentMap);
+
+	// Calling countdecorationProvider class to badge unused images
+	unusedDecorationProvider = new UnusedDecorationProvider(unusedImages);
+	disposable = vscode.window.registerFileDecorationProvider(unusedDecorationProvider);
 }
 
 async function buildFileContentMap() {
