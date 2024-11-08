@@ -1,4 +1,3 @@
 # Change Log
 
-- Bug Fixes.
-- Prevents double badging that was occuring in some cases.
+- Adds support for .webp files

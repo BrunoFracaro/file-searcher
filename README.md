@@ -1,6 +1,6 @@
 # Unused Image Highlighter VS Code Extension
 
-This extension helps developers identify unused media files within their project. It scans all files in the workspace and highlights any media files (like `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, etc.) that are not imported or referenced in your code.
+This extension helps developers identify unused media files within their project. It scans all files in the workspace and highlights any media files (like `.png`, `.jpg`, `.jpeg`, `.gif`, `.svg`, `.webp`) that are not imported or referenced in your code.
 
 ## Features
 
