@@ -1,7 +1,7 @@
 
 
 const vscode = require('vscode');
-const _ = require('lodash'); // Assuming you've installed lodash
+const _ = require('lodash');
 
 let fileContentMap = {};
 let unusedImages = [];
@@ -41,7 +41,7 @@ async function updateUnusedImages(document) {
 
 	unusedImages = await filterUnusedImages(fileContentMap);
 
-	// Calling countdecorationProvider class to badge unused images
+	// Calling UnusedDecorationProvider class to badge unused images
 	unusedDecorationProvider = new UnusedDecorationProvider(unusedImages);
 	disposable = vscode.window.registerFileDecorationProvider(unusedDecorationProvider);
 }
@@ -81,7 +81,7 @@ async function filterUnusedImages(contentMap) {
 }
 
 async function getAllImageFiles() {
-	const allFilesObj = await vscode.workspace.findFiles('**/*.{png,jpg,jpeg,gif,svg}', '**/node_modules/**');
+	const allFilesObj = await vscode.workspace.findFiles('**/*.{png,jpg,jpeg,gif,svg,webp}', '**/node_modules/**');
 	const allFilesPath = []
 	for (const item of allFilesObj) {
 		allFilesPath.push(item.path);
